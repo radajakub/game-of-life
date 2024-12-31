@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from visualization import stringify_grid
@@ -5,9 +7,13 @@ from utils import crop_box
 
 
 class Entity:
-    def __init__(self, box: np.ndarray, name: str) -> None:
+    @staticmethod
+    def new(box: np.ndarray, name: str) -> Entity:
+        return Entity(crop_box(box), name)
+
+    def __init__(self, data: np.ndarray, name: str) -> None:
         self.name = name
-        self.data = crop_box(box)
+        self.data = data
         self.height, self.width = self.data.shape
 
     def __repr__(self) -> str:
@@ -16,13 +22,34 @@ class Entity:
     def __str__(self) -> str:
         return stringify_grid(self.data)
 
+    def _update_shape(self) -> None:
+        self.height, self.width = self.data.shape
+
     def rotate_clockwise(self, num: int = 1) -> None:
         self.data = np.rot90(self.data, k=num, axes=(1, 0))
-        self.height, self.width = self.data.shape
+        self._update_shape()
 
     def rotate_counterclockwise(self, num: int = 1) -> None:
         self.data = np.rot90(self.data, k=num, axes=(0, 1))
-        self.height, self.width = self.data.shape
+        self._update_shape()
+
+    def reflect_diagonal(self) -> None:
+        self.data = np.transpose(self.data)
+        self._update_shape()
+
+    def reflect_horizontal(self) -> None:
+        self.data = np.fliplr(self.data)
+        self._update_shape()
+
+    def reflect_vertical(self) -> None:
+        self.data = np.flipud(self.data)
+        self._update_shape()
+
+    def clone(self) -> Entity:
+        return Entity(self.data, self.name)
+
+    def change_name(self, name: str) -> None:
+        self.name = name
 
 
 if __name__ == "__main__":

@@ -36,10 +36,13 @@ class Grid:
     def reset(self) -> None:
         self.data = np.zeros((self.height, self.width), dtype=GRID_DTYPE)
 
+    def can_place_entity(self, entity: Entity, position: tuple[int, int]) -> bool:
+        return 0 <= position[0] <= self.height - entity.height and 0 <= position[1] <= self.width - entity.width
+
     def place_entity(self, entity: Entity, position: tuple[int, int]) -> None:
         # test if the entity fits in the grid
-        assert 0 <= position[0] <= self.height - entity.height
-        assert 0 <= position[1] <= self.width - entity.width
+        if not self.can_place_entity(entity, position):
+            raise ValueError(f"Entity {entity} cannot be placed at position {position}")
 
         self.data[position[0]:position[0] + entity.height, position[1]:position[1] + entity.width] = entity.data
 
