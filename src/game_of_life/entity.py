@@ -1,7 +1,9 @@
 from __future__ import annotations
+import pickle
 
 import numpy as np
 
+from path_manager import PathManager
 from visualization import stringify_board
 from utils import crop_box
 
@@ -10,6 +12,11 @@ class Entity:
     @staticmethod
     def new(box: np.ndarray, name: str) -> Entity:
         return Entity(crop_box(box), name)
+
+    @staticmethod
+    def load(path: str) -> Entity:
+        with open(path, "rb") as f:
+            return pickle.load(f)
 
     def __init__(self, data: np.ndarray, name: str) -> None:
         self.name = name
@@ -50,6 +57,11 @@ class Entity:
 
     def change_name(self, name: str) -> None:
         self.name = name
+
+    def save(self, path_manager: PathManager) -> None:
+        path = path_manager.get_entity_path(self.name)
+        with open(path, "wb") as f:
+            pickle.dump(self, f)
 
 
 if __name__ == "__main__":

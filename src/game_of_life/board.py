@@ -1,5 +1,4 @@
 from __future__ import annotations
-import pickle
 
 import numpy as np
 from scipy.signal import convolve2d
@@ -14,11 +13,6 @@ class Board:
     def new(width: int = DEFAULT_BOARD_WIDTH, height: int = DEFAULT_BOARD_HEIGHT) -> Board:
         return Board(np.zeros((height, width), dtype=BOARD_DTYPE))
 
-    @staticmethod
-    def load(path: str) -> Board:
-        with open(path, "rb") as f:
-            return pickle.load(f)
-
     def __init__(self, data: np.ndarray) -> None:
         self.height, self.width = data.shape
         self.data = data
@@ -28,10 +22,6 @@ class Board:
 
     def __str__(self) -> str:
         return stringify_board(self.data)
-
-    def save(self, path: str) -> None:
-        with open(path, "wb") as f:
-            pickle.dump(self, f)
 
     def reset(self) -> None:
         self.data = np.zeros((self.height, self.width), dtype=BOARD_DTYPE)
