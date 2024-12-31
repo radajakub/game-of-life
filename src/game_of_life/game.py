@@ -1,11 +1,11 @@
 from time import sleep
 
-from grid import Grid
+from board import Board
 
 
 class Game:
-    def __init__(self, grid: Grid, frequency: int = 10, steps: int = 100) -> None:
-        self.grid = grid
+    def __init__(self, board: Board, frequency: int = 10, steps: int = 100) -> None:
+        self.board = board
         self.frequency = frequency
         self.time_delay = 1 / frequency
         self.steps = steps
@@ -14,7 +14,7 @@ class Game:
         return str(self)
 
     def __str__(self) -> str:
-        return f"Game(grid=({self.grid.width}, {self.grid.height}), frequency={self.frequency}, time_delay={self.time_delay})"
+        return f"Game(board=({self.board.width}, {self.board.height}), frequency={self.frequency}, time_delay={self.time_delay})"
 
     def set_frequency(self, frequency: int) -> None:
         self.frequency = frequency
@@ -24,10 +24,10 @@ class Game:
         self.steps = steps
 
     def reset(self) -> None:
-        self.grid.reset()
+        self.board.reset()
 
     def run(self) -> None:
-        print(self.grid)
+        print(self.board)
         if self.steps < 0:
             self._run_infinite()
         else:
@@ -36,12 +36,12 @@ class Game:
     def _run_finite(self) -> None:
         for _ in range(self.steps):
             sleep(self.time_delay)
-            self.grid = self.grid.evolve()
-            print(self.grid)
+            self.board = self.board.evolve()
+            print(self.board)
 
     def _run_infinite(self) -> None:
         # TODO: implement asynchronous processing to stop this
         while True:
             sleep(self.time_delay)
-            self.grid = self.grid.evolve()
-            print(self.grid)
+            self.board = self.board.evolve()
+            print(self.board)

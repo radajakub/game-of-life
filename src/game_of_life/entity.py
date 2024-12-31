@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from visualization import stringify_grid
+from visualization import stringify_board
 from utils import crop_box
 
 
@@ -20,7 +20,7 @@ class Entity:
         return f"Entity(name={self.name}, height={self.height}, width={self.width})"
 
     def __str__(self) -> str:
-        return stringify_grid(self.data)
+        return stringify_board(self.data)
 
     def _update_shape(self) -> None:
         self.height, self.width = self.data.shape

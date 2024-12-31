@@ -4,18 +4,18 @@ import pickle
 import numpy as np
 from scipy.signal import convolve2d
 
-from config import GRID_DTYPE, DEFAULT_GRID_HEIGHT, DEFAULT_GRID_WIDTH
+from config import BOARD_DTYPE, DEFAULT_BOARD_HEIGHT, DEFAULT_BOARD_WIDTH
 from entity import Entity
-from visualization import stringify_grid
+from visualization import stringify_board
 
 
-class Grid:
+class Board:
     @staticmethod
-    def new(width: int = DEFAULT_GRID_WIDTH, height: int = DEFAULT_GRID_HEIGHT) -> Grid:
-        return Grid(np.zeros((height, width), dtype=GRID_DTYPE))
+    def new(width: int = DEFAULT_BOARD_WIDTH, height: int = DEFAULT_BOARD_HEIGHT) -> Board:
+        return Board(np.zeros((height, width), dtype=BOARD_DTYPE))
 
     @staticmethod
-    def load(path: str) -> Grid:
+    def load(path: str) -> Board:
         with open(path, "rb") as f:
             return pickle.load(f)
 
@@ -24,29 +24,29 @@ class Grid:
         self.data = data
 
     def __repr__(self) -> str:
-        return f"Grid(height={self.height}, width={self.width}, alive={np.sum(self.data != 0)})"
+        return f"board(height={self.height}, width={self.width}, alive={np.sum(self.data != 0)})"
 
     def __str__(self) -> str:
-        return stringify_grid(self.data)
+        return stringify_board(self.data)
 
     def save(self, path: str) -> None:
         with open(path, "wb") as f:
             pickle.dump(self, f)
 
     def reset(self) -> None:
-        self.data = np.zeros((self.height, self.width), dtype=GRID_DTYPE)
+        self.data = np.zeros((self.height, self.width), dtype=BOARD_DTYPE)
 
     def can_place_entity(self, entity: Entity, position: tuple[int, int]) -> bool:
         return 0 <= position[0] <= self.height - entity.height and 0 <= position[1] <= self.width - entity.width
 
     def place_entity(self, entity: Entity, position: tuple[int, int]) -> None:
-        # test if the entity fits in the grid
+        # test if the entity fits in the board
         if not self.can_place_entity(entity, position):
             raise ValueError(f"Entity {entity} cannot be placed at position {position}")
 
         self.data[position[0]:position[0] + entity.height, position[1]:position[1] + entity.width] = entity.data
 
-    def evolve_naive(self) -> Grid:
+    def evolve_naive(self) -> Board:
         kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
         neighbor_counts = convolve2d(self.data, kernel, mode="same", boundary="fill", fillvalue=0)
 
@@ -70,9 +70,9 @@ class Grid:
                     if neighbor_counts[r, c] == 3:
                         new_data[r, c] = 1
 
-        return Grid(new_data)
+        return Board(new_data)
 
-    def evolve(self) -> Grid:
+    def evolve(self) -> Board:
         # compute counts of neighbors for each cell
         kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
         neighbor_counts = convolve2d(self.data, kernel, mode="same", boundary="fill", fillvalue=0)
@@ -90,9 +90,9 @@ class Grid:
         mask = (neighbor_counts == 3) | ((self.data != 0) & (neighbor_counts == 2))
         new_data[mask] = 1
 
-        return Grid(new_data)
+        return Board(new_data)
 
 
 if __name__ == "__main__":
-    grid = Grid.new(width=10, height=10)
-    print(grid)
+    board = Board.new(width=10, height=10)
+    print(board)
