@@ -1,0 +1,7 @@
+import numpy as np
+
+GRID_DTYPE = np.int32
+DEFAULT_GRID_WIDTH = 100
+DEFAULT_GRID_HEIGHT = 100
+
+SERIALIZED_DIR_NAME = "serialized"
