@@ -26,15 +26,18 @@ class Board:
     def reset(self) -> None:
         self.data = np.zeros((self.height, self.width), dtype=BOARD_DTYPE)
 
-    def can_place_entity(self, entity: Entity, position: tuple[int, int]) -> bool:
-        return 0 <= position[0] <= self.height - entity.height and 0 <= position[1] <= self.width - entity.width
+    def can_place_entity(self, entity: Entity, x0: int, y0: int) -> bool:
+        fits_board = 0 <= y0 <= self.height - entity.height and 0 <= x0 <= self.width - entity.width
+        is_unoccupied = np.all(self.data[y0:y0 + entity.height, x0:x0 + entity.width] == 0)
+        return fits_board and is_unoccupied
 
-    def place_entity(self, entity: Entity, position: tuple[int, int]) -> None:
+    def place_entity(self, entity: Entity, x0: int, y0: int) -> None:
         # test if the entity fits in the board
-        if not self.can_place_entity(entity, position):
-            raise ValueError(f"Entity {entity} cannot be placed at position {position}")
+        if not self.can_place_entity(entity, x0, y0):
+            raise ValueError(f"Entity {entity} cannot be placed at position {x0, y0}")
 
-        self.data[position[0]:position[0] + entity.height, position[1]:position[1] + entity.width] = entity.data
+        dy, dx = entity.height, entity.width
+        self.data[y0:y0 + dy, x0:x0 + dx] = entity.data
 
     def evolve_naive(self) -> Board:
         kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
