@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils import get_players
+from game_of_life.utils.utils import get_players
 
 TOP_LEFT = "┌"
 TOP_RIGHT = "┐"

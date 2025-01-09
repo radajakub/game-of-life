@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from config import DB_ROOT, DB_BOARD_DIR, DB_PATTERN_DIR
+from game_of_life.config import DB_ROOT, DB_BOARD_DIR, DB_PATTERN_DIR
 
 
 class PathManager:

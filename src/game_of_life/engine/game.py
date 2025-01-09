@@ -1,6 +1,6 @@
 from time import sleep
 
-from board import Board
+from game_of_life.engine.board import Board
 
 
 class Game:

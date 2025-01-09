@@ -3,10 +3,10 @@ from __future__ import annotations
 import numpy as np
 from scipy.signal import convolve2d
 
-from config import BOARD_DTYPE, DEFAULT_BOARD_HEIGHT, DEFAULT_BOARD_WIDTH
-from pattern import Pattern
-from utils import fill_nonzero, safe_8_neighborhood
-from visualization import stringify_board
+from game_of_life.config import BOARD_DTYPE, DEFAULT_BOARD_HEIGHT, DEFAULT_BOARD_WIDTH
+from game_of_life.engine.pattern import Pattern
+from game_of_life.utils.utils import fill_nonzero, safe_8_neighborhood
+from game_of_life.visualization.visualization import stringify_board
 
 
 NEIGHBOR_KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])

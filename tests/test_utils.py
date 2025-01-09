@@ -1,7 +1,7 @@
 import numpy as np
 
-from src.game_of_life.utils import crop_box
-from src.game_of_life.config import BOARD_DTYPE
+from game_of_life.utils.utils import crop_box
+from game_of_life.config import BOARD_DTYPE
 
 
 def test_crop_box():

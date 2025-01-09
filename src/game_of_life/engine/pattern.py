@@ -3,9 +3,9 @@ import pickle
 
 import numpy as np
 
-from path_manager import PathManager
-from visualization import stringify_board
-from utils import crop_box, fill_nonzero
+from game_of_life.utils.path_manager import PathManager
+from game_of_life.visualization.visualization import stringify_board
+from game_of_life.utils.utils import crop_box, fill_nonzero
 
 
 class Pattern:
