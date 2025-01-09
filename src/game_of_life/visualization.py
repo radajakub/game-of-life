@@ -1,35 +1,44 @@
 import numpy as np
 
-TOP_LEFT_CORNER = "┌"
-TOP_RIGHT_CORNER = "┐"
-BOTTOM_LEFT_CORNER = "└"
-BOTTOM_RIGHT_CORNER = "┘"
-HORIZONTAL_BORDER = "─"
-VERTICAL_BORDER = "│"
-HORIZONTAL_DOWN_BORDER = "┬"
-HORIZONTAL_UP_BORDER = "┴"
-VERTICAL_RIGHT_BORDER = "├"
-VERTICAL_LEFT_BORDER = "┤"
-CROSS_BORDER = "┼"
+from utils import get_players
+
+TOP_LEFT = "┌"
+TOP_RIGHT = "┐"
+BOTTOM_LEFT = "└"
+BOTTOM_RIGHT = "┘"
+HORIZONTAL = "─"
+VERTICAL = "│"
+HORIZONTAL_DOWN = "┬"
+HORIZONTAL_UP = "┴"
+VERTICAL_RIGHT = "├"
+VERTICAL_LEFT = "┤"
+CROSS = "┼"
 
 EMPTY_CELL = " "
-PLAYER_CELL = "█"
+# This is currently a limited to only 2 players
+PLAYER_CELLS = ["◉", "▣"]
 
 
 def stringify_board(board: np.ndarray) -> str:
+    if len(get_players(board)) > 2:
+        raise ValueError("This function is currently limited to only 2 players")
+
+    # get the number of players on the board
+    players = get_players(board)
+
+    # turn game board into characters
     char_board = np.zeros_like(board, dtype=str)
     char_board[board == 0] = EMPTY_CELL
-    char_board[board != 0] = PLAYER_CELL
+    for player, symbol in zip(players, PLAYER_CELLS):
+        char_board[board == player] = symbol
 
+    # create string representation of the board
     height, width = board.shape
     res = []
-    res.append(TOP_LEFT_CORNER + (HORIZONTAL_BORDER + HORIZONTAL_DOWN_BORDER)
-               * (width - 1) + HORIZONTAL_BORDER + TOP_RIGHT_CORNER)
+    res.append(TOP_LEFT + (HORIZONTAL + HORIZONTAL_DOWN) * (width - 1) + HORIZONTAL + TOP_RIGHT)
     for r in range(height):
         if r != 0:
-            res.append(VERTICAL_RIGHT_BORDER + (HORIZONTAL_BORDER + CROSS_BORDER)
-                       * (width - 1) + HORIZONTAL_BORDER + VERTICAL_LEFT_BORDER)
-        res.append(VERTICAL_BORDER + VERTICAL_BORDER.join(char_board[r]) + VERTICAL_BORDER)
-    res.append(BOTTOM_LEFT_CORNER + (HORIZONTAL_BORDER + HORIZONTAL_UP_BORDER)
-               * (width - 1) + HORIZONTAL_BORDER + BOTTOM_RIGHT_CORNER)
+            res.append(VERTICAL_RIGHT + (HORIZONTAL + CROSS) * (width - 1) + HORIZONTAL + VERTICAL_LEFT)
+        res.append(VERTICAL + VERTICAL.join(char_board[r]) + VERTICAL)
+    res.append(BOTTOM_LEFT + (HORIZONTAL + HORIZONTAL_UP) * (width - 1) + HORIZONTAL + BOTTOM_RIGHT)
     return "\n".join(res)

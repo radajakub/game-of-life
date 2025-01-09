@@ -5,16 +5,16 @@ import numpy as np
 
 from path_manager import PathManager
 from visualization import stringify_board
-from utils import crop_box
+from utils import crop_box, fill_nonzero
 
 
-class Entity:
+class Pattern:
     @staticmethod
-    def new(box: np.ndarray, name: str) -> Entity:
-        return Entity(crop_box(box), name)
+    def new(box: np.ndarray, name: str) -> Pattern:
+        return Pattern(fill_nonzero(crop_box(box), fill_value=1), name)
 
     @staticmethod
-    def load(path: str) -> Entity:
+    def load(path: str) -> Pattern:
         with open(path, "rb") as f:
             return pickle.load(f)
 
@@ -24,7 +24,7 @@ class Entity:
         self.height, self.width = self.data.shape
 
     def __repr__(self) -> str:
-        return f"Entity(name={self.name}, height={self.height}, width={self.width})"
+        return f"pattern(name={self.name}, height={self.height}, width={self.width})"
 
     def __str__(self) -> str:
         return stringify_board(self.data)
@@ -52,18 +52,25 @@ class Entity:
         self.data = np.flipud(self.data)
         self._update_shape()
 
-    def clone(self) -> Entity:
-        return Entity(self.data, self.name)
+    def clone(self) -> Pattern:
+        return Pattern(self.data, self.name)
 
-    def change_name(self, name: str) -> None:
+    def rename(self, name: str) -> None:
         self.name = name
 
+    def assign_to_player(self, player: int) -> Pattern:
+        return Pattern(fill_nonzero(self.data, fill_value=player), self.name)
+
     def save(self, path_manager: PathManager) -> None:
-        path = path_manager.get_entity_path(self.name)
+        path = path_manager.get_pattern_path(self.name)
         with open(path, "wb") as f:
             pickle.dump(self, f)
 
 
 if __name__ == "__main__":
-    entity = Entity(np.array([[0, 0, 1], [1, 0, 1], [0, 1, 1]]), name="Glider")
-    print(entity)
+    pattern = Pattern(np.array([[0, 0, 1], [1, 0, 1], [0, 1, 1]]), name="Glider")
+    print(pattern)
+    pattern.rotate_clockwise(num=2)
+    print(pattern)
+    pattern.reflect_horizontal()
+    print(pattern)

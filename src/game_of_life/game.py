@@ -4,17 +4,18 @@ from board import Board
 
 
 class Game:
-    def __init__(self, board: Board, frequency: int = 10, steps: int = 100) -> None:
+    def __init__(self, board: Board, frequency: int = 10, steps: int = 100, players: int = 1) -> None:
         self.board = board
         self.frequency = frequency
         self.time_delay = 1 / frequency
         self.steps = steps
+        self.players = players
 
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
-        return f"Game(board=({self.board.width}, {self.board.height}), frequency={self.frequency}, time_delay={self.time_delay})"
+        return f"Game(board=({self.board.width}, {self.board.height}), frequency={self.frequency}, time_delay={self.time_delay}, players={self.players})"
 
     def set_frequency(self, frequency: int) -> None:
         self.frequency = frequency
