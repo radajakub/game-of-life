@@ -9,7 +9,7 @@ from game_of_life.gui.widgets.centered_button import CenteredButton
 from game_of_life.gui.widgets.integer_input import IntegerInput
 from game_of_life.gui.layouts.preparation_layout import PreparationLayout
 from game_of_life.gui.widgets.board_view import BoardView
-from game_of_life.gui.config import INTRO_SCREEN_LABEL, LABEL_FONT_SIZE, TITLE_FONT_SIZE
+from game_of_life.gui.consts import CREATE_PATTERN_SCREEN_LABEL, INTRO_SCREEN_LABEL, LABEL_FONT_SIZE, SIMULATION_SCREEN_LABEL, TITLE_FONT_SIZE
 from game_of_life.utils.path_manager import PathManager
 
 
@@ -76,6 +76,7 @@ class CreatePatternScreen(Screen):
             text='Test Pattern',
             size_hint_y=1,
         )
+        self.test_pattern_button.bind(on_press=self.go_to_simulation_screen)
         self.layout.actions_container.add_widget(self.test_pattern_button)
 
         self.clear_board_button = CenteredButton(
@@ -137,3 +138,10 @@ class CreatePatternScreen(Screen):
         self.grid_view.reflect_model()
         self.name_input.text = ''
         self.size_input.text = str(self.model.height)
+
+    def go_to_simulation_screen(self, instance):
+        # prepare data
+        simulation_screen = self.manager.get_screen(SIMULATION_SCREEN_LABEL)
+        simulation_screen.init_data(board=self.model.copy(), back_label=CREATE_PATTERN_SCREEN_LABEL)
+
+        self.manager.current = SIMULATION_SCREEN_LABEL

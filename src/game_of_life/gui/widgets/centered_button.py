@@ -1,6 +1,6 @@
 from kivy.uix.button import Button
 
-from game_of_life.gui.config import LABEL_FONT_SIZE
+from game_of_life.gui.consts import LABEL_FONT_SIZE
 
 
 class CenteredButton(Button):

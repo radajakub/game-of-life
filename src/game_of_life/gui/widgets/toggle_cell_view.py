@@ -1,5 +1,7 @@
 from kivy.uix.button import Button
 
+from game_of_life.gui.consts import COLORS
+
 
 class ToggleCellView(Button):
     def __init__(self, row: int, col: int, value: int = 0, **kwargs):
@@ -10,4 +12,4 @@ class ToggleCellView(Button):
         self.update(value)
 
     def update(self, value: int) -> None:
-        self.background_color = (0.2, 0.6, 1, 1) if value else (0.2, 0.2, 0.2, 1)
+        self.background_color = COLORS[value]

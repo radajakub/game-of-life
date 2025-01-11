@@ -63,6 +63,12 @@ class Board:
     def count_alive_cells(self) -> int:
         return np.sum(self.data != 0)
 
+    def is_equal(self, other: Board) -> bool:
+        if self.height != other.height or self.width != other.width:
+            return False
+
+        return np.all(self.data == other.data)
+
     def resize(self, height: int, width: int) -> None:
         old_height, old_width = self.height, self.width
         new_height, new_width = height, width
