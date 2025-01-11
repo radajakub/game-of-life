@@ -6,6 +6,7 @@ from game_of_life.engine.board import Board
 class Game:
     def __init__(self, board: Board, frequency: int = 10, steps: int = 100, players: int = 1) -> None:
         self.board = board
+        self.original_board = board.copy()
         self.frequency = frequency
         self.time_delay = 1 / frequency
         self.steps = steps
@@ -25,7 +26,10 @@ class Game:
         self.steps = steps
 
     def reset(self) -> None:
-        self.board.reset()
+        self.board = self.original_board.copy()
+
+    def step(self) -> None:
+        self.board = self.board.evolve()
 
     def run(self) -> None:
         print(self.board)

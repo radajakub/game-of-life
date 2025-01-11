@@ -46,13 +46,43 @@ class Board:
         self.kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(height={self.height}, width={self.width}, alive={np.sum(self.data != 0)})"
+        return f"{self.__class__.__name__}(height={self.height}, width={self.width}, alive={self.count_alive_cells()})"
 
     def __str__(self) -> str:
         return stringify_board(self.data)
 
-    def reset(self) -> None:
+    def clear(self) -> None:
         self.data = np.zeros((self.height, self.width), dtype=BOARD_DTYPE)
+
+    def copy(self) -> Board:
+        return Board(self.data.copy())
+
+    def toggle_cell(self, r: int, c: int, value: int = 1) -> None:
+        self.data[r, c] = max(0, value - self.data[r, c])
+
+    def count_alive_cells(self) -> int:
+        return np.sum(self.data != 0)
+
+    def resize(self, height: int, width: int) -> None:
+        old_height, old_width = self.height, self.width
+        new_height, new_width = height, width
+
+        new_data = np.zeros((new_height, new_width), dtype=BOARD_DTYPE)
+
+        dh = abs(old_height - new_height) // 2
+        dw = abs(old_width - new_width) // 2
+
+        if new_height < old_height and new_width < old_width:
+            new_data[:, :] = self.data[dh:dh + new_height, dw:dw + new_width]
+        elif new_height < old_height and new_width >= old_width:
+            new_data[:, dw:dw + old_width] = self.data[dh:dh + new_height, :]
+        elif new_height >= old_height and new_width < old_width:
+            new_data[dh:dh + old_height, :] = self.data[:, dw:dw + new_width]
+        elif new_height >= old_height and new_width >= old_width:
+            new_data[dh:dh + old_height, dw:dw + old_width] = self.data
+
+        self.data = new_data
+        self.height, self.width = new_height, new_width
 
     def can_place_pattern(self, pattern: Pattern, x0: int, y0: int, player: int = 1) -> bool:
         dy, dx = pattern.height, pattern.width
