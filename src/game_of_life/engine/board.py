@@ -58,7 +58,10 @@ class Board:
         return Board(self.data.copy())
 
     def toggle_cell(self, r: int, c: int, value: int = 1) -> None:
-        self.data[r, c] = max(0, value - self.data[r, c])
+        if self.data[r, c] == 0:
+            self.data[r, c] = value
+        else:
+            self.data[r, c] = 0
 
     def count_alive_cells(self) -> int:
         return np.sum(self.data != 0)
@@ -105,10 +108,6 @@ class Board:
 
     def place_pattern(self, pattern: Pattern, x0: int, y0: int, player: int = 1) -> None:
         pattern = pattern.assign_to_player(player)
-
-        # test if the pattern fits in the board
-        if not self.can_place_pattern(pattern, x0, y0):
-            raise ValueError(f"pattern {pattern} cannot be placed at position {x0, y0}")
 
         dy, dx = pattern.height, pattern.width
         # only place the alive cells, do not overwrite existing ones with dead cells

@@ -1,7 +1,6 @@
 from typing import Callable
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.label import Label
 
 from game_of_life.engine.pattern import Pattern
 from game_of_life.gui.widgets.cell_view import CellView
@@ -18,18 +17,6 @@ class PatternView(BoxLayout):
 
         self.bind(on_touch_down=self._on_touch_down)
 
-        self.label = Label(
-            text=pattern.name,
-            size_hint_y=0.2,
-            font_size='10sp',
-            max_lines=2,
-            halign='center',
-            valign='middle',
-            shorten=True,
-            shorten_from='right',
-            text_size=(None, None),
-        )
-
         self.grid = GridLayout(
             rows=pattern.height,
             cols=pattern.width,
@@ -42,7 +29,6 @@ class PatternView(BoxLayout):
                 self.grid.add_widget(CellView(row, col, self.pattern.data[row, col]))
 
         self.add_widget(self.grid)
-        self.add_widget(self.label)
 
         self.grid.bind(height=self._update_grid_size)
 
@@ -59,8 +45,6 @@ class PatternView(BoxLayout):
             size = min(available_height, self.width) * 0.8
             self.grid.height = size
             self.grid.width = size
-
-            self.label.text_size = (size, None)
 
     def bind_on_select(self, callback: Callable):
         self.on_select = callback

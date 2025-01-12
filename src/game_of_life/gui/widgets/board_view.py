@@ -9,6 +9,9 @@ class BoardView(GridLayout):
         super().__init__(**kwargs)
 
         self.model = model
+
+        self.player = 1
+
         self.rows = model.height
         self.cols = model.width
         self.spacing = 1
@@ -19,14 +22,17 @@ class BoardView(GridLayout):
 
         for r in range(self.rows):
             for c in range(self.cols):
-                cell = ToggleCellView(row=r, col=c)
+                cell = ToggleCellView(row=r, col=c, value=0)
                 cell.bind(on_press=self.update_model)
                 self.buttons.append(cell)
                 self.add_widget(cell)
 
     def update_model(self, instance):
-        self.model.toggle_cell(instance.row, instance.col)
+        self.model.toggle_cell(instance.row, instance.col, value=self.player)
         instance.update(self.model.data[instance.row, instance.col])
+
+    def update_player(self, player):
+        self.player = player
 
     def reflect_model(self, *args):
         for button in self.buttons:
