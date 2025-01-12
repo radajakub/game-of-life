@@ -26,8 +26,8 @@ class SliderInput(BoxLayout):
             spacing=5,
         )
         self.slider = Slider(
-            low=low,
-            high=high,
+            min=low,
+            max=high,
             value=initial_value,
             step=step,
             cursor_size=(50, 50),

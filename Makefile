@@ -10,5 +10,11 @@ dependencies:
 run:
 	python src/game_of_life/app.py
 
+install:
+	pip install -r requirements.txt
+	pip install -e .
 
-.PHONY: push submit dependencies run
+test:
+	python -m pytest
+
+.PHONY: push submit dependencies run install test
