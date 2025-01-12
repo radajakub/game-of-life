@@ -5,7 +5,7 @@ from kivy.uix.screenmanager import Screen
 from game_of_life.config import DEFAULT_FREQUENCY, DEFAULT_STEPS
 from game_of_life.engine.board import Board
 from game_of_life.engine.game import Game
-from game_of_life.gui.consts import LABEL_FONT_SIZE, SIMULATION_FINISHED, SIMULATION_INITIALIZED,  SIMULATION_PAUSED, SIMULATION_RUNNING
+from game_of_life.gui.consts import LABEL_FONT_SIZE, SIMULATION_FINISHED, SIMULATION_INITIALIZED, SIMULATION_PAUSED, SIMULATION_RUNNING
 from game_of_life.gui.layouts.button_row_layout import ButtonRowLayout
 from game_of_life.gui.layouts.split_layout import SplitLayout
 from game_of_life.gui.widgets.board_game_view import BoardGameView
@@ -95,14 +95,13 @@ class SimulationScreen(Screen):
         self.status_label.text = SIMULATION_INITIALIZED
 
     def reset(self, instance):
-        self.back_label = None
-        self.board = None
-        self.game_model = None
         self.previous_step_button.disabled = True
         self.layout.grid_container.clear_widgets()
         self.frequency_setter.slider.value = DEFAULT_FREQUENCY
         self.steps_setter.slider.value = DEFAULT_STEPS
         self.status_label.text = SIMULATION_INITIALIZED
+        self.board = None
+        self.game_model = None
 
     def restart(self, instance):
         self.game_model.restart()
@@ -111,26 +110,33 @@ class SimulationScreen(Screen):
         # todo: undisable some buttons?
         self.status_label.text = SIMULATION_INITIALIZED
 
-    def toggle_buttons(self, enabled: bool):
-        # todo
-        pass
+    def toggle_buttons(self, disabled: bool):
+        self.back_button.disabled = disabled
+        self.previous_step_button.disabled = disabled
+        self.next_step_button.disabled = disabled
+        self.run_button.disabled = disabled
+        self.restart_button.disabled = disabled
+        self.frequency_setter.slider.disabled = disabled
+        self.steps_setter.slider.disabled = disabled
 
     def format_status(self, status: str):
         return f'{status} ({self.game_model.i}/{self.game_model.steps})'
 
     def run(self, instance):
         self.status_label.text = self.format_status(SIMULATION_RUNNING)
-        self.toggle_buttons(False)
+        self.toggle_buttons(disabled=True)
 
         Clock.schedule_interval(self._run_step, self.game_model.time_delay)
-
-        self.toggle_buttons(True)
-        self.status_label.text = self.format_status(SIMULATION_FINISHED)
 
     def _run_step(self, dt):
         output = self.game_model.run_step()
         self.board_view.reflect_model(self.game_model.board)
         self.status_label.text = self.format_status(SIMULATION_RUNNING)
+
+        if not output:
+            self.toggle_buttons(disabled=False)
+            self.status_label.text = self.format_status(SIMULATION_FINISHED)
+
         return output
 
     def _update_left_column_width(self, instance, value):
@@ -138,8 +144,8 @@ class SimulationScreen(Screen):
 
     def go_back(self, instance):
         if self.back_label:
-            self.manager.current = self.back_label
             self.reset(instance)
+            self.manager.current = self.back_label
 
     def check_step_buttons(self):
         self.previous_step_button.disabled = not self.game_model.can_go_previous()

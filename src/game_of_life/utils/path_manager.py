@@ -24,3 +24,6 @@ class PathManager:
 
     def get_pattern_path(self, pattern_name: str) -> str:
         return self._extend(self.db_pattern_dir / pattern_name.lower().replace(" ", "_"))
+
+    def get_all_patterns(self) -> list[str]:
+        return self.db_pattern_dir.glob("*.pkl")

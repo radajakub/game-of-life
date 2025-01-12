@@ -1,21 +1,23 @@
 from kivy.uix.screenmanager import Screen
-from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 
 from game_of_life.engine.board import Board
-from game_of_life.engine.pattern import Pattern
+from game_of_life.engine.pattern import Pattern, load_all_patterns
 from game_of_life.gui.layouts.button_row_layout import ButtonRowLayout
 from game_of_life.gui.widgets.centered_button import CenteredButton
 from game_of_life.gui.widgets.integer_input import IntegerInput
 from game_of_life.gui.layouts.preparation_layout import PreparationLayout
 from game_of_life.gui.widgets.board_view import BoardView
-from game_of_life.gui.consts import CREATE_PATTERN_SCREEN_LABEL, INTRO_SCREEN_LABEL, LABEL_FONT_SIZE, SIMULATION_SCREEN_LABEL, TITLE_FONT_SIZE
+from game_of_life.gui.consts import CREATE_PATTERN_SCREEN_LABEL, INTRO_SCREEN_LABEL, LABEL_FONT_SIZE, SIMULATION_SCREEN_LABEL
+from game_of_life.gui.widgets.pattern_view import PatternView
 from game_of_life.utils.path_manager import PathManager
 
 
 class CreatePatternScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.path_manager = PathManager()
 
         self.model = Board.new()
         self.layout = PreparationLayout()
@@ -68,7 +70,7 @@ class CreatePatternScreen(Screen):
             disabled=True,
         )
         self.size_input.bind(text=self.check_resize_button)
-        self.resize_button.bind(on_press=self.resize_board)
+        self.resize_button.bind(on_press=self.resize_board_from_input)
         size_layout.add_widget(self.resize_button)
         self.layout.actions_container.add_widget(size_layout)
 
@@ -86,27 +88,44 @@ class CreatePatternScreen(Screen):
         self.clear_board_button.bind(on_press=self.clear_board)
         self.layout.actions_container.add_widget(self.clear_board_button)
 
-        self.layout.patterns_container.add_widget(
-            Label(
-                text='Welcome to the Game of Life!',
-                font_size=TITLE_FONT_SIZE,
-                size_hint_y=0.7
-            )
-        )
+        self.update_pattern_lib()
 
         self.add_widget(self.layout)
+
+    def update_pattern_lib(self):
+        self.layout.patterns_container.clear_widgets()
+        self.patterns = load_all_patterns(self.path_manager)
+        for pattern in self.patterns:
+            pattern_view = PatternView(pattern)
+            pattern_view.bind_on_select(self.on_pattern_view_click)
+            self.layout.patterns_container.add_widget(pattern_view)
+
+    def on_pattern_view_click(self, pattern: Pattern):
+        self.model.clear()
+
+        if pattern.height > self.model.height or pattern.width > self.model.width:
+            larger_size = max(pattern.height, pattern.width)
+            self.resize_board(larger_size)
+
+        y0 = (self.model.height - pattern.height) // 2
+        x0 = (self.model.width - pattern.width) // 2
+        self.model.place_pattern(pattern, x0, y0)
+        self.grid_view.reflect_model()
 
     def go_to_intro_screen(self, instance):
         self.reset(instance)
         self.manager.current = INTRO_SCREEN_LABEL
 
-    def resize_board(self, instance):
-        dim = int(self.size_input.text)
-        self.model.resize(dim, dim)
+    def resize_board(self, new_size: int):
+        self.model.resize(new_size, new_size)
         self.grid_view = BoardView(self.model)
         self.grid_view.reflect_model()
         self.layout.grid_container.clear_widgets()
         self.layout.grid_container.add_widget(self.grid_view)
+
+    def resize_board_from_input(self, instance):
+        dim = int(self.size_input.text)
+        self.resize_board(dim)
 
     def reset(self, instance):
         self.model = Board.new()
@@ -128,10 +147,11 @@ class CreatePatternScreen(Screen):
             return
 
         path_manager = PathManager()
-        pattern = Pattern(self.model.data, self.name_input.text)
+        pattern = Pattern.new(self.model.data, self.name_input.text)
         pattern.save(path_manager)
 
         self.reset(instance)
+        self.update_pattern_lib()
 
     def clear_board(self, instance):
         self.model.clear()
@@ -140,6 +160,9 @@ class CreatePatternScreen(Screen):
         self.size_input.text = str(self.model.height)
 
     def go_to_simulation_screen(self, instance):
+        if self.model.count_alive_cells() == 0:
+            return
+
         # prepare data
         simulation_screen = self.manager.get_screen(SIMULATION_SCREEN_LABEL)
         simulation_screen.init_data(board=self.model.copy(), back_label=CREATE_PATTERN_SCREEN_LABEL)

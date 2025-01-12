@@ -67,6 +67,10 @@ class Pattern:
             pickle.dump(self, f)
 
 
+def load_all_patterns(path_manager: PathManager) -> list[Pattern]:
+    return [Pattern.load(path) for path in path_manager.get_all_patterns()]
+
+
 if __name__ == "__main__":
     pattern = Pattern(np.array([[0, 0, 1], [1, 0, 1], [0, 1, 1]]), name="Glider")
     print(pattern)
