@@ -7,6 +7,11 @@ BASE_PADDING = 20
 TITLE_FONT_SIZE = '24sp'
 LABEL_FONT_SIZE = '20sp'
 
+SIMULATION_INITIALIZED = 'Simulation initialized'
+SIMULATION_PAUSED = 'Simulation paused'
+SIMULATION_RUNNING = 'Simulation running'
+SIMULATION_FINISHED = 'Simulation finished'
+
 COLORS = [
     (0.2, 0.2, 0.2, 1),  # background (index 0)
     (0.2, 0.6, 1, 1),  # player 1 (index 1)
