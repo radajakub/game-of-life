@@ -42,9 +42,6 @@ class Board:
         self.height, self.width = data.shape
         self.data = data
 
-        # kernel for counting neighbors
-        self.kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
-
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(height={self.height}, width={self.width}, alive={self.count_alive_cells()})"
 
