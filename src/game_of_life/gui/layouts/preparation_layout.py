@@ -1,3 +1,5 @@
+""" Module for the layout for both preparation screens, the create pattern screen and the create simulation screen. """
+
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 
@@ -5,6 +7,8 @@ from game_of_life.gui.consts import BASE_PADDING
 
 
 class PreparationLayout(BoxLayout):
+    """ Layout to split grid containing Game of Life board, action buttons and pattern library into 3 sections. """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -56,5 +60,6 @@ class PreparationLayout(BoxLayout):
         self.add_widget(self.patterns_scroll)
 
     def _update_grid_container_width(self, instance, value):
-        # Make left column width equal to its height to maintain square shape
+        """ Make left column width equal to its height to maintain square shape """
+
         instance.width = value

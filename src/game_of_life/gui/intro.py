@@ -1,3 +1,5 @@
+""" Module for the app introduction screen. """
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
@@ -8,6 +10,8 @@ from game_of_life.gui.consts import BASE_PADDING, CREATE_SIMULATION_SCREEN_LABEL
 
 
 class IntroScreen(Screen):
+    """ Screen that is displayed by the app when it is opened, it serves as a main menu. """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -40,10 +44,15 @@ class IntroScreen(Screen):
         self.add_widget(layout)
 
     def go_to_pattern_screen(self, _):
+        """ Route screen manager to the create pattern screen. """
+
         self.manager.current = CREATE_PATTERN_SCREEN_LABEL
 
     def go_to_prepare_simulation_screen(self, _):
+        """ Route screen manager to the create simulation screen. """
+
         self.manager.current = CREATE_SIMULATION_SCREEN_LABEL
 
     def end_app(self, _):
+        """ End the app. """
         App.get_running_app().stop()

@@ -1,3 +1,5 @@
+""" Module for the slider input widget. """
+
 from typing import Callable
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.slider import Slider
@@ -5,7 +7,12 @@ from kivy.uix.label import Label
 
 
 class SliderInput(BoxLayout):
-    def __init__(self, label: str, min: int, max: int, step: int, initial_value: int, update_function: Callable, **kwargs):
+    """
+    Slider input widget is used to select a value from a fixed range of values.
+    It contains the slider and label displaying the current value.
+    """
+
+    def __init__(self, label: str, low: int, high: int, step: int, initial_value: int, update_function: Callable, **kwargs):
         super().__init__(**kwargs)
 
         self.orientation = 'vertical'
@@ -19,8 +26,8 @@ class SliderInput(BoxLayout):
             spacing=5,
         )
         self.slider = Slider(
-            min=min,
-            max=max,
+            low=low,
+            high=high,
             value=initial_value,
             step=step,
             cursor_size=(50, 50),
@@ -34,5 +41,7 @@ class SliderInput(BoxLayout):
         self.add_widget(self.slider_row)
 
     def update(self, instance, value):
+        """ Update the slider value label and position. """
+
         self.slider_value_label.text = str(value)
         self.update_function(instance, value)

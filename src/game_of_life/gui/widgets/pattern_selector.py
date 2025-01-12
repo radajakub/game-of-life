@@ -1,3 +1,5 @@
+""" Module for inspecting and modifying patterns. """
+
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
@@ -9,6 +11,11 @@ from game_of_life.gui.widgets.cell_view import CellView
 
 
 class PatternSelector(BoxLayout):
+    """
+    Handles the detailed view of a pattern with a name and action buttons.
+    The actions include rotations and reflections.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -98,7 +105,8 @@ class PatternSelector(BoxLayout):
 
         self.current_pattern = None
 
-    def reset(self, instance):
+    def reset(self, _):
+        """ Reset the pattern selector to the initial empty state. """
         self.current_pattern = None
         self.player = 1
 
@@ -117,31 +125,56 @@ class PatternSelector(BoxLayout):
         self.content_container.add_widget(self.grid)
         self.update_buttons()
 
-    def rotate_left(self, instance):
+    def rotate_left(self, _):
+        """ Rotate the pattern left action. """
+
         self.current_pattern.rotate_counterclockwise()
         self.set_pattern(self.current_pattern, self.player)
 
-    def rotate_right(self, instance):
+    def rotate_right(self, _):
+        """ Rotate the pattern right action. """
+
         self.current_pattern.rotate_clockwise()
         self.set_pattern(self.current_pattern, self.player)
 
-    def flip_horizontal(self, instance):
+    def flip_horizontal(self, _):
+        """ Flip the pattern horizontally action. """
+
         self.current_pattern.reflect_horizontal()
         self.set_pattern(self.current_pattern, self.player)
 
-    def flip_vertical(self, instance):
+    def flip_vertical(self, _):
+        """ Flip the pattern vertically action. """
+
         self.current_pattern.reflect_vertical()
         self.set_pattern(self.current_pattern, self.player)
 
-    def flip_diagonal(self, instance):
+    def flip_diagonal(self, _):
+        """ Flip the pattern diagonally action. """
+
         self.current_pattern.reflect_diagonal()
         self.set_pattern(self.current_pattern, self.player)
 
     def set_player(self, player: int):
+        """
+        Set the player for the pattern.
+
+        Args:
+            player: the player to set the pattern for
+        """
+
         if self.current_pattern is not None:
             self.set_pattern(self.current_pattern, player)
 
     def set_pattern(self, pattern: Pattern, player: int):
+        """
+        Set the pattern and update the widget to display it with the correct player.
+
+        Args:
+            pattern: the pattern to set
+            player: the player to set the pattern for
+        """
+
         self.player = player
         self.current_pattern = pattern
 
@@ -163,6 +196,11 @@ class PatternSelector(BoxLayout):
         self.update_buttons()
 
     def update_buttons(self):
+        """
+        Update the disabled state of the buttons based on the current pattern.
+        The user should not be able to rotate or flip an empty pattern.
+        """
+
         val = self.current_pattern is None
         self.left_button.disabled = val
         self.right_button.disabled = val

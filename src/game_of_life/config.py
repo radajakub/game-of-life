@@ -1,3 +1,8 @@
+"""
+This is the configuration file for the game of life engine part.
+Specifically default values and strings for simple file db.
+"""
+
 import numpy as np
 
 BOARD_DTYPE = np.int32

@@ -1,3 +1,7 @@
+"""
+This module implements the multi-player Game of Life board and related helper functions.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -12,13 +16,36 @@ from game_of_life.visualization.visualization import stringify_board
 NEIGHBOR_KERNEL = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
 
 
-def count_neighbors(board: np.ndarray) -> np.ndarray:
-    return convolve2d(board, NEIGHBOR_KERNEL, mode="same", boundary="fill", fillvalue=0)
+def count_neighbors(arr: np.ndarray) -> np.ndarray:
+    """
+    Compute 8 neighborhood matrix for the given board.
+    This function considers all players as equal, i.e. all players contribute to the count with 1.
+
+    Args:
+        arr: 2D numpy array representing the board
+
+    Returns:
+        2D numpy array representing the 8 neighborhood matrix
+    """
+
+    return convolve2d(arr, NEIGHBOR_KERNEL, mode="same", boundary="fill", fillvalue=0)
 
 
-def get_majority_player(board: np.ndarray) -> int:
+def get_majority_player(arr: np.ndarray) -> int:
+    """
+    Get the majority player for the given board.
+    This function finds the most frequent player in the given board.
+    If the majority is a tie, it returns 0 (dead cell).
+
+    Args:
+        arr: 2D numpy array representing the board
+
+    Returns:
+        int index of the majority player
+    """
+
     # filter out dead cells
-    vals = board.flatten()
+    vals = arr.flatten()
     vals = vals[vals != 0]
 
     # count cells of each player and sort them in descending order
@@ -34,11 +61,31 @@ def get_majority_player(board: np.ndarray) -> int:
 
 
 class Board:
+    """
+    This class represents the multi-player Game of Life board.
+    """
+
     @staticmethod
     def new(width: int = DEFAULT_BOARD_WIDTH, height: int = DEFAULT_BOARD_HEIGHT) -> Board:
+        """
+        Create an empty board with the given width and height.
+
+        Args:
+            width: width of the board
+            height: height of the board
+        """
+
         return Board(np.zeros((height, width), dtype=BOARD_DTYPE))
 
     def __init__(self, data: np.ndarray) -> None:
+        """
+        Initialize the board with the given data and save the shape.
+        Should not be used directly, used mainly for inner methods.
+
+        Args:
+            data: 2D numpy array representing the board
+        """
+
         self.height, self.width = data.shape
         self.data = data
 
@@ -49,27 +96,55 @@ class Board:
         return stringify_board(self.data)
 
     def clear(self) -> None:
+        """ Clears the board by setting all cells to 0. """
+
         self.data = np.zeros((self.height, self.width), dtype=BOARD_DTYPE)
 
     def copy(self) -> Board:
+        """ Returns a copy of the board. """
+
         return Board(self.data.copy())
 
     def toggle_cell(self, r: int, c: int, value: int = 1) -> None:
+        """
+        Toggle the cell at the given position.
+        If the cell is dead, it becomes alive and vice versa.
+
+        Args:
+            r: row index of the cell
+            c: column index of the cell
+            value: value to set the cell to (i.e. player index)
+        """
+
         if self.data[r, c] == 0:
             self.data[r, c] = value
         else:
             self.data[r, c] = 0
 
     def count_alive_cells(self) -> int:
+        """ Counts the number of alive cells on the board. """
+
         return np.sum(self.data != 0)
 
     def is_equal(self, other: Board) -> bool:
+        """ Compare two boards for equality. """
+
         if self.height != other.height or self.width != other.width:
             return False
 
         return np.all(self.data == other.data)
 
     def resize(self, height: int, width: int) -> None:
+        """
+        Resize the board to the given height and width.
+        If the new size is smaller, the board is cropped.
+        If the new size is larger, the board is padded with dead cells.
+
+        Args:
+            height: new height of the board
+            width: new width of the board
+        """
+
         old_height, old_width = self.height, self.width
         new_height, new_width = height, width
 
@@ -91,6 +166,16 @@ class Board:
         self.height, self.width = new_height, new_width
 
     def can_place_pattern(self, pattern: Pattern, x0: int, y0: int, player: int = 1) -> bool:
+        """
+        Check if the pattern can be placed on the board at the given position.
+
+        Args:
+            pattern: pattern to place
+            x0: x-coordinate of the top-left corner of the pattern
+            y0: y-coordinate of the top-left corner of the pattern
+            player: player index to place the pattern for
+        """
+
         dy, dx = pattern.height, pattern.width
 
         # does not go outside the bounds of the board
@@ -104,6 +189,16 @@ class Board:
         return fits_board and is_not_foreign
 
     def place_pattern(self, pattern: Pattern, x0: int, y0: int, player: int = 1) -> None:
+        """
+        Place the pattern on the board at the given position.
+
+        Args:
+            pattern: pattern to place
+            x0: x-coordinate of the top-left corner of the pattern
+            y0: y-coordinate of the top-left corner of the pattern
+            player: player index to place the pattern for
+        """
+
         pattern = pattern.assign_to_player(player)
 
         dy, dx = pattern.height, pattern.width
@@ -112,6 +207,10 @@ class Board:
         self.data[y0:y0 + dy, x0:x0 + dx][alive_mask] = pattern.data[alive_mask]
 
     def evolve(self) -> Board:
+        """
+        Evolve the board to the next generation according to the extended rules of the Game of Life.
+        """
+
         # (1) any live cell with fewer than two live neighbours dies
         # (2) any live cell with two or three live neighbours lives on to the next generation
         # (3) any live cell with more than three live neighbours dies

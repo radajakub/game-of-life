@@ -1,9 +1,13 @@
+""" Module for the layout for the simulation screen. """
+
 from kivy.uix.boxlayout import BoxLayout
 
 from game_of_life.gui.consts import BASE_PADDING
 
 
 class SplitLayout(BoxLayout):
+    """ Layout to split the simulation screen into a grid and action buttons. """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -30,5 +34,5 @@ class SplitLayout(BoxLayout):
         self.add_widget(self.actions_container)
 
     def _update_grid_container_width(self, instance, value):
-        # Make left column width equal to its height to maintain square shape
+        """ Make left column width equal to its height to maintain square shape """
         instance.width = value

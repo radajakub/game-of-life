@@ -1,3 +1,5 @@
+""" Module for the create simulation screen. """
+
 from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
 
@@ -16,6 +18,12 @@ from game_of_life.utils.path_manager import PathManager
 
 
 class CreateSimulationScreen(Screen):
+    """
+    Screen for setting up and creating a new simulation even for multiple players.
+    The board is interactive, the user can click and set alive cells for arbitrary player.
+    The user can also select a pattern to display and reuse in the simulation.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -107,7 +115,9 @@ class CreateSimulationScreen(Screen):
 
         self.add_widget(self.layout)
 
-    def get_next_player(self, instance):
+    def get_next_player(self, _):
+        """ In player switcher, select the next player in the sequence. """
+
         self.player += 1
 
         if self.player >= len(COLORS):
@@ -116,7 +126,9 @@ class CreateSimulationScreen(Screen):
         self.grid_view.update_player(self.player)
         self.pattern_selector.set_player(self.player)
 
-    def get_prev_player(self, instance):
+    def get_prev_player(self, _):
+        """ In player switcher, select the previous player in the sequence. """
+
         self.player -= 1
 
         if self.player < 1:
@@ -126,6 +138,7 @@ class CreateSimulationScreen(Screen):
         self.pattern_selector.set_player(self.player)
 
     def update_pattern_lib(self):
+        """ Load all patterns from the patterns folder and display them. """
         self.layout.patterns_container.clear_widgets()
         self.patterns = load_all_patterns(self.path_manager)
         for pattern in self.patterns:
@@ -134,24 +147,44 @@ class CreateSimulationScreen(Screen):
             self.layout.patterns_container.add_widget(pattern_view)
 
     def on_pattern_view_click(self, pattern: Pattern):
+        """
+        Select pattern for a detailed view.
+
+        Args:
+            pattern: the pattern to show detail of
+        """
+
         self.pattern_selector.set_pattern(pattern, self.player)
 
     def go_to_intro_screen(self, instance):
+        """ Go back to the intro screen. """
+
         self.reset(instance)
         self.manager.current = INTRO_SCREEN_LABEL
 
     def resize_board(self, new_size: int):
+        """
+        Resize the board to the new size
+
+        Args:
+            new_size: the new size of the board
+        """
+
         self.model.resize(new_size, new_size)
         self.grid_view = BoardView(self.model)
         self.grid_view.reflect_model()
         self.layout.grid_container.clear_widgets()
         self.layout.grid_container.add_widget(self.grid_view)
 
-    def resize_board_from_input(self, instance):
+    def resize_board_from_input(self, _):
+        """ Resize the board to the new size from the input field. """
+
         dim = int(self.size_input.text)
         self.resize_board(dim)
 
-    def reset(self, instance):
+    def reset(self, _):
+        """ Reset the grid and all the fields so that they do not contain information from the last run. """
+
         self.model = Board.new()
         self.grid_view = BoardView(self.model)
         self.grid_view.reflect_model()
@@ -161,15 +194,24 @@ class CreateSimulationScreen(Screen):
         self.player = 1
         self.player_indicator.update(self.player)
 
-    def check_resize_button(self, instance, value):
+    def check_resize_button(self, _, value):
+        """ Check if the resize button should be disabled. """
+
         self.resize_button.disabled = (not value) or (int(value) == self.model.height)
 
-    def clear_board(self, instance):
+    def clear_board(self, _):
+        """ Clear the board so that the user can start from scratch. """
+
         self.model.clear()
         self.grid_view.reflect_model()
         self.size_input.text = str(self.model.height)
 
-    def go_to_simulation_screen(self, instance):
+    def go_to_simulation_screen(self, _):
+        """
+        Go to the simulation screen if there are alive cells on the board.
+        Function also prepares and sends data for the simulation screen.
+        """
+
         if self.model.count_alive_cells() == 0:
             return
 

@@ -1,3 +1,5 @@
+""" Module for the board game view widget. """
+
 from kivy.uix.gridlayout import GridLayout
 
 from game_of_life.engine.board import Board
@@ -5,6 +7,8 @@ from game_of_life.gui.widgets.cell_view import CellView
 
 
 class BoardGameView(GridLayout):
+    """ Display a square board as a grid of non-interactive cells. """
+
     def __init__(self, model: Board, **kwargs):
         super().__init__(**kwargs)
 
@@ -22,5 +26,12 @@ class BoardGameView(GridLayout):
                 self.add_widget(cell)
 
     def reflect_model(self, model: Board):
+        """
+        Update the display of the board based on the underlying model.
+
+        Args:
+            model: the model to reflect
+        """
+
         for cell in self.cells:
             cell.update(model.data[cell.row, cell.col])

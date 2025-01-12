@@ -1,3 +1,5 @@
+""" Module for some constants used in across the GUI. """
+
 INTRO_SCREEN_LABEL = 'intro_screen'
 CREATE_PATTERN_SCREEN_LABEL = 'create_pattern_screen'
 CREATE_SIMULATION_SCREEN_LABEL = 'create_simulation_screen'

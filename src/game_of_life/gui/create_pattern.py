@@ -1,3 +1,5 @@
+""" Module for the create pattern screen. """
+
 from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
 
@@ -14,6 +16,12 @@ from game_of_life.utils.path_manager import PathManager
 
 
 class CreatePatternScreen(Screen):
+    """
+    Screen for creating and testing new patterns.
+    On this screen, the user can create a new pattern, save it and proceed to testing it.
+    Here, only a single player (1) is supported.
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -93,6 +101,8 @@ class CreatePatternScreen(Screen):
         self.add_widget(self.layout)
 
     def update_pattern_lib(self):
+        """ Load all patterns from the patterns folder and display them. """
+
         self.layout.patterns_container.clear_widgets()
         self.patterns = load_all_patterns(self.path_manager)
         for pattern in self.patterns:
@@ -101,6 +111,14 @@ class CreatePatternScreen(Screen):
             self.layout.patterns_container.add_widget(pattern_view)
 
     def on_pattern_view_click(self, pattern: Pattern):
+        """
+        Place the selected pattern on the board
+        Place it in the center and resize the board if necessary.
+
+        Args:
+            pattern: the pattern to place on the board
+        """
+
         self.model.clear()
 
         if pattern.height > self.model.height or pattern.width > self.model.width:
@@ -113,21 +131,34 @@ class CreatePatternScreen(Screen):
         self.grid_view.reflect_model()
 
     def go_to_intro_screen(self, instance):
+        """ Go back to the intro screen. """
+
         self.reset(instance)
         self.manager.current = INTRO_SCREEN_LABEL
 
     def resize_board(self, new_size: int):
+        """
+        Resize the board to the new size.
+
+        Args:
+            new_size: the new size of the board
+        """
+
         self.model.resize(new_size, new_size)
         self.grid_view = BoardView(self.model)
         self.grid_view.reflect_model()
         self.layout.grid_container.clear_widgets()
         self.layout.grid_container.add_widget(self.grid_view)
 
-    def resize_board_from_input(self, instance):
+    def resize_board_from_input(self, _):
+        """ Resize the board to the new size from the input field. """
+
         dim = int(self.size_input.text)
         self.resize_board(dim)
 
-    def reset(self, instance):
+    def reset(self, _):
+        """ Reset the grid and all the fields so that they do not contain information from the last run. """
+
         self.model = Board.new()
         self.grid_view = BoardView(self.model)
         self.grid_view.reflect_model()
@@ -136,13 +167,19 @@ class CreatePatternScreen(Screen):
         self.name_input.text = ''
         self.size_input.text = str(self.model.height)
 
-    def check_save_button(self, instance, value):
+    def check_save_button(self, _, value):
+        """ Check if the save button should be disabled. """
+
         self.save_button.disabled = not value
 
-    def check_resize_button(self, instance, value):
+    def check_resize_button(self, _, value):
+        """ Check if the resize button should be disabled. """
+
         self.resize_button.disabled = (not value) or (int(value) == self.model.height)
 
     def save_pattern(self, instance):
+        """ Save the pattern to the patterns folder. """
+
         if not self.name_input.text or self.model.count_alive_cells() == 0:
             return
 
@@ -153,13 +190,17 @@ class CreatePatternScreen(Screen):
         self.reset(instance)
         self.update_pattern_lib()
 
-    def clear_board(self, instance):
+    def clear_board(self, _):
+        """ Clear the board so that the user can start from scratch. """
+
         self.model.clear()
         self.grid_view.reflect_model()
         self.name_input.text = ''
         self.size_input.text = str(self.model.height)
 
-    def go_to_simulation_screen(self, instance):
+    def go_to_simulation_screen(self, _):
+        """ Set data and route to the simulation screen. """
+
         if self.model.count_alive_cells() == 0:
             return
 

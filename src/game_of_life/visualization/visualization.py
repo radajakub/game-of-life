@@ -1,3 +1,5 @@
+""" Module for visualizing the Game of Life board in the console. """
+
 import numpy as np
 
 from game_of_life.utils.utils import get_players
@@ -20,6 +22,16 @@ PLAYER_CELLS = ["◉", "▣"]
 
 
 def stringify_board(board: np.ndarray) -> str:
+    """
+    Convert the board into a string table representation.
+
+    Args:
+        board: the board to convert
+
+    Returns:
+        the string representation of the board
+    """
+
     if len(get_players(board)) > 2:
         raise ValueError("This function is currently limited to only 2 players")
 

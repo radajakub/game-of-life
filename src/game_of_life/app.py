@@ -1,3 +1,5 @@
+""" Module containing the main entrypoint for the Game of Life GUI application. """
+
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, NoTransition
@@ -10,11 +12,18 @@ from game_of_life.gui.simulation import SimulationScreen
 
 
 class GameOfLifeApp(App):
+    """
+    Main application class for the Game of Life GUI.
+    """
+
     def build(self):
+        """ Build and start the application. """
+
         Window.size = (1200, 800)
         Window.minimum_width = 600
         Window.minimum_height = 400
 
+        # add all screens to the screen manager
         sm = ScreenManager(transition=NoTransition())
 
         sm.add_widget(IntroScreen(name=INTRO_SCREEN_LABEL))
